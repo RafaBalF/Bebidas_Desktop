@@ -135,26 +135,7 @@ abstract class _PedidoStoreBase with Store {
   }
 }
 
-class PaginatorDados {
 
-  @observable
-  int? currentPage;
-  @observable
-  int? totalPages;
-
-
-  PaginatorDados(
-      {this.currentPage, this.totalPages});
-
-  PaginatorDados.fromJson(Map<String, dynamic> json)
-      : currentPage = json['current_page'],
-        totalPages = json['last_page'];
-
-  Map<String, dynamic> toJson() => {
-        'currentPage': currentPage,
-        'totalPages': totalPages,
-      };
-}
 
 // class DadosFonteDaTabela extends DataTableSource {
 //   final pedidoStore = PedidoStore();
