@@ -1,4 +1,4 @@
-//ignore_for_file: prefer_const_constructors, library_private_types_in_public_api
+//ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, prefer_conditional_assignment, unnecessary_null_comparison
 
 import 'dart:async';
 import 'dart:convert';
@@ -6,7 +6,11 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:http/http.dart' as http;
+import 'package:ped/api.dart';
+import 'package:ped/app/modules/pedido/pedido_single_page.dart';
+import 'package:ped/model/paginator_model.dart';
 import 'package:ped/model/pedidos_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'pedido_store.g.dart';
 
@@ -14,6 +18,9 @@ class PedidoStore = _PedidoStoreBase with _$PedidoStore;
 
 abstract class _PedidoStoreBase with Store {
   final play = AudioPlayer();
+  final paginator = PaginatorModel();
+
+  int? total;
 
   @observable
   late ObservableList pedidoList1 = [].asObservable();
@@ -22,61 +29,16 @@ abstract class _PedidoStoreBase with Store {
     pedidoList1.add(ped);
   }
 
-  @action
-  addNovoPedido(PedidosModel ped, context) {
-    pedidoList1.add(ped);
-    showDialog(
-      context: context,
-      builder: (_) {
-        play.play(AssetSource("Mud_Lonely_This_Christmas.mp3"));
-        return AlertDialog(
-          title: Text('Aviso'),
-          content: Text('Você tem um novo pedido'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                play.stop();
-                Navigator.pop(context);
-              },
-              child: Text('Ok'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @observable
-  late ObservableList pedidoList2 = [].asObservable();
+  late int? pageTotal = 1;
+
   @action
-  addTodosPedido2(PedidosModel ped) {
-    pedidoList2.add(ped);
-  }
+  setPageTotal(int? value) => pageTotal = value;
 
-  // @override
-  // DataRow getRow(int index) {
-  //   return DataRow.byIndex(cells: [
-  //     DataCell(Text(ped[index].codigo.toString())),
-  //     DataCell(Text(ped[index].cliente.toString())),
-  //     //DataCell(Text(pedidoList1[index].status.toString())),
-  //     DataCell(Text(ped[index].data.toString())),
-  //     DataCell(Text(ped[index].valor.toString())),
-  //   ]);
-  // }
-
-  // //final dispose = reaction((_) {greeting.value}, (msg) => print(msg));
-
-  // @override
-  // bool get isRowCountApproximate => false;
-  // @override
-  // int get rowCount => pedidoList1.length;
-  // @override
-  // int get selectedRowCount => 0;
-
-  Future<ObservableList> getPedidos(String? token, context, int page) async {
+  Future<dynamic> getPedidos(String? token, context, int page) async {
     var headers = {'Authorization': 'Bearer $token'};
 
-    var url = Uri.parse('http://127.0.0.1:8000/api/orders?page=$page');
+    var url = Uri.parse('$API_URL/orders?page=$page');
     var request = http.MultipartRequest('GET', url);
 
     request.headers.addAll(headers);
@@ -85,97 +47,253 @@ abstract class _PedidoStoreBase with Store {
 
     var listaResponse = jsonDecode(await response.stream.bytesToString());
 
-    var x = listaResponse['orders']['data'][0];
-
     if (response.statusCode == 200) {
-      for(int i = 0; i <= 14; i++) {
-        PedidosModel p = PedidosModel.fromJson(listaResponse['orders']['data'][i]);
-        addTodosPedido1(p);
+      if (pedidoList1.isEmpty) {
+        for (var pedido in listaResponse['orders']['data']) {
+          PedidosModel p = PedidosModel.fromJson(pedido);
+
+          getActionButtons(p);
+
+          addTodosPedido1(p);
+          setPageTotal(listaResponse['orders']['last_page']);
+        }
+      } else if (pedidoList1.isNotEmpty) {
+        pedidoList1.removeRange(0, pedidoList1.length);
+        for (var pedido in listaResponse['orders']['data']) {
+          PedidosModel p = PedidosModel.fromJson(pedido);
+
+          getActionButtons(p);
+
+          addTodosPedido1(p);
+          setPageTotal(listaResponse['orders']['last_page']);
+        }
       }
 
-      // for (var pedido in listaResponse['orders']['data'][0]) {
-      //   PedidosModel p = PedidosModel.fromJson(pedido);
-      //   addTodosPedido1(p);
-      // }
+      if (total == null) {
+        total = listaResponse['orders']['total'];
+      } else if (total != listaResponse['orders']['total']) {
+        total = listaResponse['orders']['total'];
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            play.play(AssetSource("Mud_Lonely_This_Christmas.mp3"));
+            return AlertDialog(
+              title: Text('Obaa! Novo pedido'),
+              content: Text('Você tem um novo pedido'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    play.stop();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }
 
-      return pedidoList1;
+      PaginatorModel pag = PaginatorModel.fromJson(listaResponse['orders']);
+
+      paginator.setTotalPages(pag.totalPages);
+      paginator.setCurrentPage(pag.currentPage);
+      return listaResponse;
     }
 
-    for (var pedido in listaResponse['pedido']) {
-      PedidosModel p = PedidosModel.fromJson(pedido);
-      addTodosPedido1(p);
+    return listaResponse;
+  }
+
+  updatePedido(String? token, String situation, String uuid) async {
+    var headers = {'Authorization': 'Bearer $token'};
+
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('$API_URL/orders/update/$uuid/$situation'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    jsonDecode(await response.stream.bytesToString());
+
+    debugPrint('ping update');
+
+    // if(response.statusCode == 200) {
+    //   debugPrint('teste $data');
+    // }
+  }
+
+  getActionButtons(p) {
+    if (p.situation == 'W') {
+      p.botoes = botao(
+          Colors.green,
+          Icon(Icons.thumb_up_rounded),
+          'Notificar que o pedido foi aceito.',
+          true,
+          true,
+          context,
+          p.uuid,
+          'accept');
+    } else if (p.situation == 'R') {
+      p.botoes = botao(
+          Colors.green,
+          Icon(Icons.thumb_up_rounded),
+          'Notificar que o pedido foi aceito.',
+          false,
+          false,
+          context,
+          p.uuid,
+          null);
+    } else if (p.situation == 'A') {
+      p.botoes = botao(
+          Colors.blue,
+          Icon(Icons.delivery_dining),
+          'Notificar que o pedido saiu para entrega',
+          true,
+          false,
+          context,
+          p.uuid,
+          'delivery');
+    } else if (p.situation == 'D') {
+      p.botoes = botao(
+          Colors.green,
+          Icon(Icons.check),
+          'Notificar que o pedido foi entregue',
+          true,
+          false,
+          context,
+          p.uuid,
+          'finish');
+    } else if (p.situation == 'F') {
+      p.botoes = botao(
+          Colors.green,
+          Icon(Icons.check),
+          'Notificar que o pedido foi entregue',
+          false,
+          false,
+          context,
+          p.uuid,
+          null);
+    } else {
+      p.botoes = botao(
+          Colors.green,
+          Icon(Icons.check),
+          'Notificar que o pedido foi entregue',
+          false,
+          false,
+          context,
+          p.uuid,
+          null);
     }
-
-    // if (pedidoList1.isEmpty && pedidoList2.isEmpty) {
-    //   for (var pedido in listaResponse['pedido']) {
-    //     PedidosModel p = PedidosModel.fromJson(pedido);
-    //     addTodosPedido1(p);
-    //   }
-    //   //ped = pedidoList1;
-    //   for (var pedido in listaResponse['pedido']) {
-    //     PedidosModel p = PedidosModel.fromJson(pedido);
-    //     addTodosPedido2(p);
-    //   }
-    // } else {
-    //   pedidoList2.removeRange(0, pedidoList2.length);
-    //   for (var pedido in listaResponse['pedido']) {
-    //     PedidosModel p = PedidosModel.fromJson(pedido);
-    //     addTodosPedido2(p);
-    //   }
-    // }
-    // if (pedidoList1.length != pedidoList2.length) {
-    //   pedidoList1.removeRange(0, pedidoList1.length);
-    //   for (var pedido in listaResponse['pedido']) {
-    //     PedidosModel p = PedidosModel.fromJson(pedido);
-    //     addNovoPedido(p, context);
-    //   }
-    // }
-
-    return pedidoList1;
   }
 }
 
-class PaginatorDados {
+Row botao(corBotaoAccept, iconBotaoAccept, dicaBotaoAccept,
+    visibilityBotaoAccept, visibilityBotaoReject, context, uuid, action) {
+  var pedidoStore = PedidoStore();
+  String? token = '';
 
-  @observable
-  int? currentPage;
-  @observable
-  int? totalPages;
+  getToken() async {
+    final prefs = await SharedPreferences.getInstance();
 
+    token = prefs.getString('token');
+    // debugPrint('get$token');
+  }
 
-  PaginatorDados(
-      {this.currentPage, this.totalPages});
+  updatePedidoAccept(String uuid, action) async {
+    await getToken();
 
-  PaginatorDados.fromJson(Map<String, dynamic> json)
-      : currentPage = json['current_page'],
-        totalPages = json['last_page'];
+    await pedidoStore.updatePedido(token, action, uuid);
+  }
 
-  Map<String, dynamic> toJson() => {
-        'currentPage': currentPage,
-        'totalPages': totalPages,
-      };
+  updatePedidoReject(String uuid) async {
+    await getToken();
+    await pedidoStore.updatePedido(token, 'reject', uuid);
+  }
+
+  return Row(
+    children: [
+      Row(
+        children: [
+          Visibility(
+            visible: visibilityBotaoAccept,
+            child: ElevatedButton(
+              onPressed: () {
+                debugPrint('ping botao');
+                updatePedidoAccept(uuid, action);
+              },
+              child: iconBotaoAccept,
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(20),
+                backgroundColor: corBotaoAccept, // <-- Button color
+                foregroundColor: Colors.white, // <-- Splash color
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 2,
+          ),
+          Visibility(
+            visible: visibilityBotaoReject,
+            child: ElevatedButton(
+              onPressed: () => updatePedidoReject(uuid),
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(20),
+                backgroundColor: Colors.red, // <-- Button color
+                foregroundColor: Colors.white, // <-- Splash color
+              ),
+              child: Icon(Icons.cancel_rounded),
+            ),
+          ),
+          SizedBox(
+            width: 2,
+          ),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => PedidoSinglePage(
+          //           title: 'Pedidos',
+          //           uuid: uuid,
+          //         ),
+          //       ),
+          //     );
+          //   },
+          //   style: ElevatedButton.styleFrom(
+          //     shape: CircleBorder(),
+          //     padding: EdgeInsets.all(20),
+          //     backgroundColor: Colors.blue, // <-- Button color
+          //     foregroundColor: Colors.white, // <-- Splash color
+          //   ),
+          //   child: Icon(Icons.visibility_outlined),
+          // ),
+        ],
+      )
+    ],
+  );
 }
 
-// class DadosFonteDaTabela extends DataTableSource {
-//   final pedidoStore = PedidoStore();
-//   List ped = [];
+class Paginate {
+  Paginate({
+    required this.currentPage,
+    required this.lastPage,
+  });
+  late final int currentPage;
+  late final int lastPage;
 
-//   @override
-//   DataRow getRow(int index) {
-//     ped = pedidoStore.pedidoList1;
-//     return DataRow.byIndex(cells: [
-//       DataCell(Text(ped[index].codigo.toString())),
-//       DataCell(Text(ped[index].cliente.toString())),
-//       //DataCell(Text(ped[index].status.toString())),
-//       DataCell(Text(ped[index].data.toString())),
-//       DataCell(Text(ped[index].valor.toString())),
-//     ]);
-//   }
+  Paginate.fromJson(Map<String, dynamic> json) {
+    currentPage = json['current_page'];
+    lastPage = json['last_page'];
+  }
 
-//   @override
-//   bool get isRowCountApproximate => false;
-//   @override
-//   int get rowCount => ped.length;
-//   @override
-//   int get selectedRowCount => 0;
-// }
+  Map<String, dynamic> toJson() {
+    final _data = <String, dynamic>{};
+    _data['current_page'] = currentPage;
+    _data['last_page'] = lastPage;
+    return _data;
+  }
+}

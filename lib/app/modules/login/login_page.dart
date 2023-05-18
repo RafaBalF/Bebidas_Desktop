@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_if_null_operators, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_if_null_operators, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -19,7 +19,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   var loginStore = LoginStore();
-  var idPdvDoLogin;
+  String? token;
 
   _textFieldLogin({
     String? labelText,
@@ -72,18 +72,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  getIdPdv() async {
+  getToken() async {
     final prefs = await SharedPreferences.getInstance();
 
-    idPdvDoLogin = prefs.getString('idPdv');
-    print('getLogin$idPdvDoLogin');
-    return idPdvDoLogin;
+    token = prefs.getString('token');
   }
 
   autoLogin() async {
-    await getIdPdv();
-    print('getLologin$idPdvDoLogin');
-    if (idPdvDoLogin != null) {
+    await getToken();
+    // print('getLologin$token');
+    if (token != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -97,10 +95,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     autoLogin();
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Login'),
-      //   automaticallyImplyLeading: false,
-      // ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

@@ -13,15 +13,32 @@ mixin _$LojaStore on _LojaStoreBase, Store {
       Atom(name: '_LojaStoreBase.lojaOpenClose', context: context);
 
   @override
-  String? get lojaOpenClose {
+  bool? get lojaOpenClose {
     _$lojaOpenCloseAtom.reportRead();
     return super.lojaOpenClose;
   }
 
   @override
-  set lojaOpenClose(String? value) {
+  set lojaOpenClose(bool? value) {
     _$lojaOpenCloseAtom.reportWrite(value, super.lojaOpenClose, () {
       super.lojaOpenClose = value;
+    });
+  }
+
+  late final _$lojaOpenCloseMensageAtom =
+      Atom(name: '_LojaStoreBase.lojaOpenCloseMensage', context: context);
+
+  @override
+  String? get lojaOpenCloseMensage {
+    _$lojaOpenCloseMensageAtom.reportRead();
+    return super.lojaOpenCloseMensage;
+  }
+
+  @override
+  set lojaOpenCloseMensage(String? value) {
+    _$lojaOpenCloseMensageAtom.reportWrite(value, super.lojaOpenCloseMensage,
+        () {
+      super.lojaOpenCloseMensage = value;
     });
   }
 
@@ -29,7 +46,7 @@ mixin _$LojaStore on _LojaStoreBase, Store {
       ActionController(name: '_LojaStoreBase', context: context);
 
   @override
-  dynamic changeLojaOpenClose(String? value) {
+  dynamic changeLojaOpenClose(bool? value) {
     final _$actionInfo = _$_LojaStoreBaseActionController.startAction(
         name: '_LojaStoreBase.changeLojaOpenClose');
     try {
@@ -40,9 +57,21 @@ mixin _$LojaStore on _LojaStoreBase, Store {
   }
 
   @override
+  dynamic changeLojaOpenCloseMensage(String? value) {
+    final _$actionInfo = _$_LojaStoreBaseActionController.startAction(
+        name: '_LojaStoreBase.changeLojaOpenCloseMensage');
+    try {
+      return super.changeLojaOpenCloseMensage(value);
+    } finally {
+      _$_LojaStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
-lojaOpenClose: ${lojaOpenClose}
+lojaOpenClose: ${lojaOpenClose},
+lojaOpenCloseMensage: ${lojaOpenCloseMensage}
     ''';
   }
 }

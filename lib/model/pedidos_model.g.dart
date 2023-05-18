@@ -89,6 +89,54 @@ mixin _$PedidosModel on _PedidosModelBase, Store {
     });
   }
 
+  late final _$uuidAtom =
+      Atom(name: '_PedidosModelBase.uuid', context: context);
+
+  @override
+  String? get uuid {
+    _$uuidAtom.reportRead();
+    return super.uuid;
+  }
+
+  @override
+  set uuid(String? value) {
+    _$uuidAtom.reportWrite(value, super.uuid, () {
+      super.uuid = value;
+    });
+  }
+
+  late final _$situationAtom =
+      Atom(name: '_PedidosModelBase.situation', context: context);
+
+  @override
+  String? get situation {
+    _$situationAtom.reportRead();
+    return super.situation;
+  }
+
+  @override
+  set situation(String? value) {
+    _$situationAtom.reportWrite(value, super.situation, () {
+      super.situation = value;
+    });
+  }
+
+  late final _$botoesAtom =
+      Atom(name: '_PedidosModelBase.botoes', context: context);
+
+  @override
+  Row? get botoes {
+    _$botoesAtom.reportRead();
+    return super.botoes;
+  }
+
+  @override
+  set botoes(Row? value) {
+    _$botoesAtom.reportWrite(value, super.botoes, () {
+      super.botoes = value;
+    });
+  }
+
   late final _$_PedidosModelBaseActionController =
       ActionController(name: '_PedidosModelBase', context: context);
 
@@ -148,13 +196,49 @@ mixin _$PedidosModel on _PedidosModelBase, Store {
   }
 
   @override
+  dynamic setUuid(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setUuid');
+    try {
+      return super.setUuid(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setSituation(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setSituation');
+    try {
+      return super.setSituation(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setButtons(Row? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setButtons');
+    try {
+      return super.setButtons(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 codigo: ${codigo},
 cliente: ${cliente},
 status: ${status},
 data: ${data},
-valor: ${valor}
+valor: ${valor},
+uuid: ${uuid},
+situation: ${situation},
+botoes: ${botoes}
     ''';
   }
 }

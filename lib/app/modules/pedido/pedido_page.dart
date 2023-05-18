@@ -1,17 +1,17 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'dart:async';
 
-import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:ped/app/modules/login/login_page.dart';
 import 'package:ped/app/modules/login/login_store.dart';
 import 'package:ped/app/modules/pedido/loja_store.dart';
+import 'package:ped/app/modules/pedido/pedido_single_page.dart';
 import 'package:ped/app/modules/pedido/pedido_store.dart';
+import 'package:ped/model/paginator_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:window_manager/window_manager.dart';
 
 class PedidoPage extends StatefulWidget {
   PedidoPage({super.key, required this.title});
@@ -24,29 +24,36 @@ class PedidoPage extends StatefulWidget {
 
 class _PedidoPageState extends State<PedidoPage> {
   var pedidoStore = PedidoStore();
-  var loginStore = LoginStore();
   var lojaStore = LojaStore();
-  var idPdvDoLogin;
-  var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNjgyNjgzOTg4LCJleHAiOjE2ODMyODM5ODgsIm5iZiI6MTY4MjY4Mzk4OCwianRpIjoiNDlMclBSdTRoWmtTMERSSiIsInN1YiI6MTcwODI1LCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.O4eu-cdaENgvfSq7pZjTbcm9glQlBvFdENtduwUP07o';
-  var per_page = 1;
-  //final DataTableSource dadosPedidos = DadosFonteDaTabela();
+  var paginator = PaginatorModel();
 
-  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? token = '';
+  var perPage = 1;
+  int indexText = 1;
 
-  getIdPdv() async {
+  bool ligaDesligaLoja = false;
+  bool ligaDesligaChamadaDePedido = false;
+
+  var corBotao = Colors.red;
+
+  final NumberPaginatorController _controller = NumberPaginatorController();
+  final ScrollController _scrollController = ScrollController();
+
+  int timerTest = 0;
+
+  getToken() async {
     final prefs = await SharedPreferences.getInstance();
 
-    idPdvDoLogin = prefs.getString('idPdv');
-    debugPrint('get$idPdvDoLogin');
+    token = prefs.getString('token');
+    // debugPrint('get$token');
   }
 
-  deleteIdPdv() async {
+  logout() async {
     final prefs = await SharedPreferences.getInstance();
 
-    await prefs.remove('idPdv');
-    debugPrint('remove$idPdvDoLogin');
+    await prefs.remove('token');
+    debugPrint('remove$token');
 
-    //if (idPdvDoLogin) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -56,68 +63,31 @@ class _PedidoPageState extends State<PedidoPage> {
   }
 
   pedidoCall() async {
-    getIdPdv();
+    await getToken();
 
-    await pedidoStore.getPedidos(token, context, per_page);
-
-    debugPrint('777');
+    await pedidoStore.getPedidos(token, context, perPage);
   }
 
-  verificaLojaOnlineCall(String idPdv) async {
-    await lojaStore.verificaLojaOnlineGetApi(idPdv);
-  }
+  ligaDesligaLojaCall(bool openClose) async {
+    await getToken();
 
-  ligaDesligaLojaCall(String idPdv, String isActive) async {
-    var x = await lojaStore.ligaDesligaLojaGetApi(idPdv, isActive);
-    return x;
+    await lojaStore.ligaDesligaLojaGetApi(token, openClose);
   }
 
   PageController page = PageController();
-  //SideMenuController menu = SideMenuController();
 
   @override
   Widget build(BuildContext context) {
-    bool ligaDesligaLoja = false;
-    bool ligaDesligaChamadaDePedido = false;
-    var corBotao = Colors.red;
-    int selectedPageNumber = 1;
-
     pedidoCall();
-    verificaLojaOnlineCall('0');
-    ligaDesligaLojaCall('0', 'N');
 
-    //DesktopWindow.getFullScreen();
-    //DesktopWindow.setFullScreen(fullscream);
-    //testWindowFunctions();
-
-    //DataTableSource dadosPedidos = DadosFonteDaTabela();
-    //print(dadosPedidos);
-
-    // paginaTabela() {
-    //   Timer(Duration(seconds: 5), () {
-    //     final DataTableSource dadosPedidos = DadosFonteDaTabela();
-    //     dadosPedidos.getPedidos
-
-    //     PaginatedDataTable(
-    //       source: dadosPedidos,
-    //       header: const Text('Pedidos'),
-    //       columns: const [
-    //         DataColumn(label: Text('Codigo')),
-    //         DataColumn(label: Text('Cliente')),
-    //         //DataColumn(label: Text('Status')),
-    //         DataColumn(label: Text('Data')),
-    //         DataColumn(label: Text('Valor'))
-    //       ],
-    //       columnSpacing: 100,
-    //       horizontalMargin: 10,
-    //       rowsPerPage: 8,
-    //       showCheckboxColumn: false,
-    //     );
-    //     // dadosPedidos = dadosPedidos2;
-    //     // print(dadosPedidos);
-    //     // dadosPedidos.notifyListeners();
-    //   });
-    // }
+    // Timer.periodic(
+    //   Duration(seconds: 10),
+    //   (timerx) {
+    //     pedidoCall();
+    //     timerTest = timerTest + 1;
+    //     debugPrint('Timer teeest $timerTest');
+    //   },
+    // );
 
     return Scaffold(
       appBar: AppBar(
@@ -130,7 +100,8 @@ class _PedidoPageState extends State<PedidoPage> {
               heroTag: 'btnX',
               onPressed: () {
                 ligaDesligaChamadaDePedido = true;
-                deleteIdPdv();
+                logout();
+                ligaDesligaLojaCall(false);
               },
               backgroundColor: Colors.amber,
               elevation: 0,
@@ -142,23 +113,13 @@ class _PedidoPageState extends State<PedidoPage> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // SideMenu(
-          //   items: items,
-          //   controller: page,
-          //   footer: const Text("Guia"),
-          //   onDisplayModeChanged: (mode) {},
-          //   style: SideMenuStyle(
-          //     backgroundColor: Colors.black87,
-          //     selectedColor: Colors.amber,
-          //   ),
-          // ),
           Expanded(
             child: PageView(
-              // controller: page,
               children: [
                 SizedBox(
                   width: 500,
                   child: ListView(
+                    controller: _scrollController,
                     children: [
                       Column(
                         children: [
@@ -167,24 +128,22 @@ class _PedidoPageState extends State<PedidoPage> {
                           ),
                           Observer(builder: (_) {
                             return Container(
-                              width:
-                                  MediaQuery.of(this.context).size.width - 5,
+                              width: MediaQuery.of(this.context).size.width - 5,
                               height: 150,
                               color: Colors.amber,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(lojaStore.lojaOpenClose.toString()),
+                                  Text(lojaStore.lojaOpenCloseMensage
+                                      .toString()),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   FloatingActionButton(
                                     heroTag: 'btn',
                                     onPressed: () {
-                                      int z = 0;
                                       if (ligaDesligaLoja == false) {
-                                        verificaLojaOnlineCall(idPdvDoLogin);
-                                        ligaDesligaLojaCall(idPdvDoLogin, 'S');
+                                        ligaDesligaLojaCall(true);
                                         corBotao = Colors.green;
                                         Timer.periodic(
                                           Duration(seconds: 1),
@@ -193,12 +152,12 @@ class _PedidoPageState extends State<PedidoPage> {
                                                 false) {
                                               pedidoCall();
 
-                                              z = z + 1;
-                                              debugPrint('$z');
+                                              timerTest = timerTest + 1;
+                                              debugPrint(
+                                                  'Timer teeest $timerTest');
                                             } else {
                                               timer.cancel();
-                                              verificaLojaOnlineCall('0');
-                                              ligaDesligaLojaCall('0', 'N');
+                                              ligaDesligaLojaCall(false);
                                               ligaDesligaChamadaDePedido =
                                                   false;
                                               corBotao = Colors.red;
@@ -223,45 +182,137 @@ class _PedidoPageState extends State<PedidoPage> {
                           ),
                           Observer(builder: (_) {
                             return DataTable(
-                              columns: const [
+                              columns: [
                                 DataColumn(label: Text('Codigo')),
                                 DataColumn(label: Text('Cliente')),
                                 DataColumn(label: Text('Status')),
                                 DataColumn(label: Text('Data')),
-                                DataColumn(label: Text('Valor'))
+                                DataColumn(label: Text('Valor')),
+                                DataColumn(label: Text(''))
                               ],
                               rows: List<DataRow>.generate(
                                 pedidoStore.pedidoList1.length,
                                 (index) => DataRow(
+                                  // onLongPress: () {setttere();},
                                   cells: <DataCell>[
-                                    DataCell(Text(pedidoStore
-                                        .pedidoList1[index].codigo
-                                        .toString())),
-                                    DataCell(Text(pedidoStore
-                                        .pedidoList1[index].cliente
-                                        .toString())),
-                                    DataCell(Text(
-                                        (pedidoStore.pedidoList1[index].status)
-                                            .toString())),
-                                    DataCell(Text(pedidoStore
-                                        .pedidoList1[index].data
-                                        .toString())),
-                                    DataCell(Text(pedidoStore
-                                        .pedidoList1[index].valor
-                                        .toString())),
+                                    DataCell(SizedBox(
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                  1000) /
+                                              6),
+                                      child: Text(pedidoStore
+                                          .pedidoList1[index].codigo
+                                          .toString()),
+                                    )),
+                                    DataCell(SizedBox(
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                  700) /
+                                              6),
+                                      child: Text(pedidoStore
+                                          .pedidoList1[index].cliente
+                                          .toString()),
+                                    )),
+                                    DataCell(SizedBox(
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                  600) /
+                                              6),
+                                      child: Text((pedidoStore
+                                              .pedidoList1[index].status)
+                                          .toString()),
+                                    )),
+                                    DataCell(SizedBox(
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                  500) /
+                                              6),
+                                      child: Text(pedidoStore
+                                          .pedidoList1[index].data
+                                          .toString()),
+                                    )),
+                                    DataCell(SizedBox(
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                  900) /
+                                              6),
+                                      child: Text(pedidoStore
+                                          .pedidoList1[index].valor
+                                          .toString()),
+                                    )),
+                                    DataCell(
+                                      // onTap: () {setttere();},
+                                      SizedBox(
+                                        width: ((MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                100) /
+                                            6),
+                                        child: Row(
+                                          children: [
+                                            pedidoStore
+                                                .pedidoList1[index].botoes,
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PedidoSinglePage(
+                                                      title: 'Pedidos',
+                                                      uuid: pedidoStore
+                                                          .pedidoList1[index]
+                                                          .uuid,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                shape: CircleBorder(),
+                                                padding: EdgeInsets.all(20),
+                                                backgroundColor: Colors.white
+                                                    , // <-- Button color
+                                                foregroundColor: Colors
+                                                    .blue,
+                                               // <-- Splash color
+                                              ),
+                                              child: Icon(
+                                                  Icons.visibility_outlined),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              columnSpacing:
-                                  (MediaQuery.of(context).size.width - 700) / 5,
+                              columnSpacing: 100,
                               dataRowHeight: 150,
                               horizontalMargin: 10,
                               showCheckboxColumn: false,
                             );
                           }),
-                          // NumberPaginator(
-                          //   numberPages: ,
-                          // ),
+                          Observer(builder: (_) {
+                            return NumberPaginator(
+                              controller: _controller,
+                              numberPages: pedidoStore.pageTotal!.toInt(),
+                              onPageChange: (int indexPag) {
+                                perPage = indexPag + 1;
+                                setState(() {
+                                  indexText = indexText++;
+                                });
+                                debugPrint(
+                                    'current page in page ${pedidoStore.pageTotal}');
+                                pedidoCall();
+                                _scrollController.animateTo(
+                                  _scrollController.position.minScrollExtent,
+                                  duration: Duration(seconds: 1),
+                                  curve: Curves.fastOutSlowIn,
+                                );
+                              },
+                              initialPage: 0,
+                            );
+                          }),
                         ],
                       ),
                     ],
@@ -275,14 +326,3 @@ class _PedidoPageState extends State<PedidoPage> {
     );
   }
 }
-
-Widget label(String label, String value) => Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: <Widget>[
-          //ignore: unnecessary_string_interpolations
-          Text("$label"),
-          Text(value),
-        ],
-      ),
-    );

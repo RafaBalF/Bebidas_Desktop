@@ -25,19 +25,19 @@ mixin _$PedidoStore on _PedidoStoreBase, Store {
     });
   }
 
-  late final _$pedidoList2Atom =
-      Atom(name: '_PedidoStoreBase.pedidoList2', context: context);
+  late final _$pageTotalAtom =
+      Atom(name: '_PedidoStoreBase.pageTotal', context: context);
 
   @override
-  ObservableList<dynamic> get pedidoList2 {
-    _$pedidoList2Atom.reportRead();
-    return super.pedidoList2;
+  int? get pageTotal {
+    _$pageTotalAtom.reportRead();
+    return super.pageTotal;
   }
 
   @override
-  set pedidoList2(ObservableList<dynamic> value) {
-    _$pedidoList2Atom.reportWrite(value, super.pedidoList2, () {
-      super.pedidoList2 = value;
+  set pageTotal(int? value) {
+    _$pageTotalAtom.reportWrite(value, super.pageTotal, () {
+      super.pageTotal = value;
     });
   }
 
@@ -56,22 +56,11 @@ mixin _$PedidoStore on _PedidoStoreBase, Store {
   }
 
   @override
-  dynamic addNovoPedido(PedidosModel ped, dynamic context) {
+  dynamic setPageTotal(int? value) {
     final _$actionInfo = _$_PedidoStoreBaseActionController.startAction(
-        name: '_PedidoStoreBase.addNovoPedido');
+        name: '_PedidoStoreBase.setPageTotal');
     try {
-      return super.addNovoPedido(ped, context);
-    } finally {
-      _$_PedidoStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addTodosPedido2(PedidosModel ped) {
-    final _$actionInfo = _$_PedidoStoreBaseActionController.startAction(
-        name: '_PedidoStoreBase.addTodosPedido2');
-    try {
-      return super.addTodosPedido2(ped);
+      return super.setPageTotal(value);
     } finally {
       _$_PedidoStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -81,7 +70,7 @@ mixin _$PedidoStore on _PedidoStoreBase, Store {
   String toString() {
     return '''
 pedidoList1: ${pedidoList1},
-pedidoList2: ${pedidoList2}
+pageTotal: ${pageTotal}
     ''';
   }
 }
