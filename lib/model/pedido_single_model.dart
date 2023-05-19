@@ -2,8 +2,10 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:http/http.dart' as http;
+import 'package:ped/api.dart';
 
 part 'pedido_single_model.g.dart';
 
@@ -12,6 +14,8 @@ class PedidoSingleModel = _PedidoSingleModelBase with _$PedidoSingleModel;
 abstract class _PedidoSingleModelBase with Store {
   @observable
   String? status;
+  @observable
+  String? situation;
   @observable
   int? codigo;
   @observable
@@ -49,8 +53,6 @@ abstract class _PedidoSingleModelBase with Store {
   @observable
   String? cityCompany;
   @observable
-  String? stateCompany;
-  @observable
   String? complementCompany;
   @observable
   String? addressClient;
@@ -70,11 +72,19 @@ abstract class _PedidoSingleModelBase with Store {
   String? reference;
   @observable
   List<OrderProducts?> orderProducts = [];
+  @observable
+  bool visibilityCallMotoqueiroButton = false;
+  @observable
+  bool visibilityCallMotoqueiroMessage = false;
+  @observable
+  var orderDelivery;
 
+  @action
+  setStatus(String? value) => status = value;
   @action
   setCodigo(int? value) => codigo = value;
   @action
-  setStatus(String? value) => status = value;
+  setSituation(String? value) => situation = value;
   @action
   setNameCompany(String? value) => nameCompany = value;
   @action
@@ -110,11 +120,9 @@ abstract class _PedidoSingleModelBase with Store {
   @action
   setNeighborhoodCompany(String? value) => neighborhoodCompany = value;
   @action
-  setStateCompany(String? value) => stateCompany = value;
-  @action
   setComplementCompany(String? value) => complementCompany = value;
   @action
-  setaddressClient(String? value) => addressClient = value;
+  setAddressClient(String? value) => addressClient = value;
   @action
   setCepClient(String? value) => cepClient = value;
   @action
@@ -131,51 +139,60 @@ abstract class _PedidoSingleModelBase with Store {
   setReference(String? value) => reference = value;
   @action
   setOrderProducts(List<OrderProducts> value) => orderProducts = value;
+  @action
+  setVisibilityCallMotoqueiroButton(bool value) =>
+      visibilityCallMotoqueiroButton = value;
+  @action
+  setVisibilityCallMotoqueiroMessage(bool value) =>
+      visibilityCallMotoqueiroMessage = value;
+  @action
+  setOrderDelivery(var value) => orderDelivery = value;
 
   _PedidoSingleModelBase();
 
-  // _PedidoSingleModelBase.fromJson(Map<String, dynamic> json) {
-  //   setCepClient(json['orders'][0]['postcode']);
-  //   setaddressClient(json['orders'][0]['address']);
-  //   setNumberClient(json['orders'][0]['number']);
-  //   setComplementClient(json['orders'][0]['complement']);
-  //   setNeighborhoodClient(json['orders'][0]['neighborhood']);
-  //   setCityClient(json['orders'][0]['city']);
-  //   setStateClient(json['orders'][0]['state']);
-  //   setStatus(json['orders'][0]['status_message']);
-  //   setMethodPaymentName(json['orders'][0]['payment_method']['name']);
-  //   setMethodPaymentType(json['orders'][0]['payment_method']['type']);
-  //   setObs(json['orders'][0]['obs']);
-  //   setOrderTotal(json['orders'][0]['order_price']);
-  //   setDeliveryFee(json['orders'][0]['delivery_fee'] + .0);
-  //   setPhoneClient(json['orders'][0]['tel']);
-  //   setCodigo(json['orders'][0]['order_number']);
-  //   setCpfNota(json['orders'][0]['cpfNota']);
-  //   setdataOrder(json['orders'][0]['created_at_brt']);
-  //   setNameCliente(json['orders'][0]['user']['name']);
-  //   // orderTicket = null;
-  //   setNameCompany(json['orders'][0]['company']['name']);
-  //   setAddressCompany(json['orders'][0]['company']['address']['street']);
-  //   setCepCompany(json['orders'][0]['company']['address']['postcode']);
-  //   setNumberCompany(json['orders'][0]['company']['address']['number']);
-  //   setNeighborhoodCompany(
-  //       json['orders'][0]['company']['address']['neighborhood']);
-  //   setCityCompany(json['orders'][0]['company']['address']['city']);
-  //   setStateCompany(json['orders'][0]['company']['address']['state']);
-  //   setComplementCompany(json['orders'][0]['company']['complement']);
-  //   setPhoneCompany(List.from(json['orders'][0]['company']['phones'])
-  //       .map((e) => Phones.fromJson(e))
-  //       .toList());
-  //   setOrderProducts(List.from(json['orders'][0]['order_products'])
-  //       .map((e) => OrderProducts.fromJson(e))
-  //       .toList());
-  // }
+  _PedidoSingleModelBase.fromJson(Map<String, dynamic> json) {
+    cepClient = json['orders'][0]['postcode'];
+    addressClient = json['orders'][0]['address'];
+    numberClient = json['orders'][0]['number'];
+    complementClient = json['orders'][0]['complement'];
+    neighborhoodClient = json['orders'][0]['neighborhood'];
+    cityClient = json['orders'][0]['city'];
+    stateClient = json['orders'][0]['state'];
+    status = json['orders'][0]['status'];
+    situation = json['orders'][0]['status_message'];
+    methodPaymentName = json['orders'][0]['payment_method']['name'];
+    methodPaymentType = json['orders'][0]['payment_method']['type'];
+    obs = json['orders'][0]['obs'];
+    orderTotal = json['orders'][0]['order_price'];
+    deliveryFee = json['orders'][0]['delivery_fee'] + .0;
+    phoneClient = json['orders'][0]['tel'];
+    codigo = json['orders'][0]['order_number'];
+    cpfNota = json['orders'][0]['cpfNota'];
+    dateOrder = json['orders'][0]['created_at_brt'];
+    nameCliente = json['orders'][0]['user']['name'];
+    // orderTicket = null;
+    nameCompany = json['orders'][0]['company']['name'];
+    addressCompany = json['orders'][0]['company']['address']['street'];
+    cepCompany = json['orders'][0]['company']['address']['postcode'];
+    numberCompany = json['orders'][0]['company']['address']['number'];
+    neighborhoodCompany =
+        json['orders'][0]['company']['address']['neighborhood'];
+    cityCompany = json['orders'][0]['company']['address']['city'];
+    complementCompany = json['orders'][0]['company']['complement'];
+    phoneCompany = List.from(json['orders'][0]['company']['phones'])
+        .map((e) => Phones.fromJson(e))
+        .toList();
+    orderProducts = List.from(json['orders'][0]['order_products'])
+        .map((e) => OrderProducts.fromJson(e))
+        .toList();
+        orderDelivery = json['orders'][0]['order_delivery'];
+  }
 
   getPedidoByUuid(String? token, uuid) async {
     var headers = {'Authorization': 'Bearer $token'};
 
-    var request = http.MultipartRequest(
-        'GET', Uri.parse('http://127.0.0.1:8000/api/orders/$uuid'));
+    var request =
+        http.MultipartRequest('GET', Uri.parse('$API_URL/orders/$uuid'));
 
     request.headers.addAll(headers);
 
@@ -184,43 +201,63 @@ abstract class _PedidoSingleModelBase with Store {
     var data = jsonDecode(await response.stream.bytesToString());
 
     if (response.statusCode == 200) {
-      // PedidoSingleModel ped = PedidoSingleModel.fromJson(data);
+      PedidoSingleModel ped = PedidoSingleModel.fromJson(data);
 
-      setCepClient(data['orders'][0]['postcode']);
-    setaddressClient(data['orders'][0]['address']);
-    setNumberClient(data['orders'][0]['number']);
-    setComplementClient(data['orders'][0]['complement']);
-    setReference(data['orders'][0]['reference']);
-    setNeighborhoodClient(data['orders'][0]['neighborhood']);
-    setCityClient(data['orders'][0]['city']);
-    setStateClient(data['orders'][0]['state']);
-    setStatus(data['orders'][0]['status_message']);
-    setMethodPaymentName(data['orders'][0]['payment_method']['name']);
-    setMethodPaymentType(data['orders'][0]['payment_method']['type']);
-    setObs(data['orders'][0]['obs']);
-    setOrderTotal(data['orders'][0]['order_price']);
-    setDeliveryFee(data['orders'][0]['delivery_fee'] + .0);
-    setPhoneClient(data['orders'][0]['tel']);
-    setCodigo(data['orders'][0]['order_number']);
-    setCpfNota(data['orders'][0]['cpfNota'] ?? 'Não');
-    setdataOrder(data['orders'][0]['created_at_brt']);
-    setNameCliente(data['orders'][0]['user']['name']);
-    // orderTicket = null;
-    setNameCompany(data['orders'][0]['company']['name']);
-    setAddressCompany(data['orders'][0]['company']['address']['street']);
-    setCepCompany(data['orders'][0]['company']['address']['postcode']);
-    setNumberCompany(data['orders'][0]['company']['address']['number']);
-    setNeighborhoodCompany(
-        data['orders'][0]['company']['address']['neighborhood']);
-    setCityCompany(data['orders'][0]['company']['address']['city']);
-    setStateCompany(data['orders'][0]['company']['address']['state']);
-    setComplementCompany(data['orders'][0]['company']['complement']);
-    setPhoneCompany(List.from(data['orders'][0]['company']['phones'])
-        .map((e) => Phones.fromJson(e))
-        .toList());
-    setOrderProducts(List.from(data['orders'][0]['order_products'])
-        .map((e) => OrderProducts.fromJson(e))
-        .toList());
+      setCepClient(ped.cepClient ?? '');
+      setAddressClient(ped.addressClient ?? '');
+      setNumberClient(ped.numberClient ?? '');
+      setComplementClient(ped.complementClient ?? '');
+      setReference(ped.reference ?? '');
+      setNeighborhoodClient(ped.neighborhoodClient ?? '');
+      setCityClient(ped.cityClient ?? '');
+      setStateClient(ped.stateClient ?? '');
+      setSituation(ped.situation ?? '');
+      setStatus(ped.status);
+      setMethodPaymentName(ped.methodPaymentName ?? '');
+      setMethodPaymentType(ped.methodPaymentType ?? '');
+      setObs(ped.obs ?? 'N/D');
+      setOrderTotal(ped.orderTotal ?? '');
+      setDeliveryFee(ped.deliveryFee! + .0);
+      setPhoneClient(ped.phoneClient ?? '');
+      setCodigo(ped.codigo ?? 000);
+      setCpfNota(ped.cpfNota ?? 'Não');
+      setdataOrder(ped.dateOrder ?? '');
+      setNameCliente(ped.nameCliente ?? '');
+      // orderTicket = null;
+      setNameCompany(ped.nameCompany ?? '');
+      setAddressCompany(
+          ped.addressCompany ?? '');
+      setCepCompany(ped.cepCompany ?? '');
+      setNumberCompany(ped.numberCompany ?? '');
+      setNeighborhoodCompany(
+          ped.neighborhoodCompany ?? '');
+      setCityCompany(ped.cityCompany ?? '');
+      setComplementCompany(ped.complementCompany ?? '');
+      setPhoneCompany(List.from(data['orders'][0]['company']['phones'] ?? '')
+          .map((e) => Phones.fromJson(e))
+          .toList());
+      setOrderProducts(List.from(data['orders'][0]['order_products'] ?? '')
+          .map((e) => OrderProducts.fromJson(e))
+          .toList());
+      setSubTotal(data['orders'][0]['order_total'] -
+              data['orders'][0]['delivery_fee'] +
+              .0 ??
+          '');
+      setOrderDelivery(ped.orderDelivery);
+
+      if (orderDelivery != null) {
+        setVisibilityCallMotoqueiroButton(false);
+        setVisibilityCallMotoqueiroMessage(true);
+      } else {
+        if (status == 'D' || status == 'A' || status == 'P') {
+          visibilityCallMotoqueiroButton = true;
+        } else {
+          visibilityCallMotoqueiroButton = false;
+          visibilityCallMotoqueiroMessage = false;
+        }
+      }
+
+      debugPrint('${phoneCompany.length}');
     }
   }
 }
@@ -240,7 +277,7 @@ class OrderProducts {
   OrderProducts.fromJson(Map<String, dynamic> json) {
     productName = json['product_name'];
     quantity = json['quantity'];
-    unitPrice = json['unit_price'];
+    unitPrice = json['unit_price'] + .0;
     finalPrice = json['final_price'];
   }
 

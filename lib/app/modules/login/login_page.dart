@@ -26,13 +26,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     onChanged,
     String? errorText,
   }) {
-    return TextField(
+    return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: onChanged,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: labelText,
-        errorText: errorText == null ? null : errorText,
+        // errorText: errorText == null ? null : errorText,
       ),
+      validator: (value) {
+                if (value == '' || value!.isEmpty) {
+      return "Por favor insira seu login";
+    } else if (!value.contains('@') ) {
+      return "E-mail inválido";
+    }
+    return null;}
+      
     );
   }
 
@@ -49,7 +58,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     onChanged,
     String? errorText,
   }) {
-    return TextField(
+    return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: senhaVisivel,
       enableSuggestions: false,
       autocorrect: false,
@@ -57,7 +67,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: labelText,
-        errorText: errorText == null ? null : errorText,
+        // errorText: errorText == null ? null : errorText,
         suffixIcon: IconButton(
           icon: Icon(senhaVisivel
               ? Icons.visibility_outlined
@@ -69,6 +79,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           }),
         ),
       ),
+      validator: (value) {
+                if (value == '' || value!.isEmpty) {
+      return "Por favor insira sua senha";
+    } else if (value.length < 6) {
+      return "sua senha precisa ter mais de 5 caracteres";
+    }
+    return null;
+  }
     );
   }
 
@@ -149,7 +167,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               loginStore.onCLick(context);
                             }
                           : null,
-                      child: Row(mainAxisSize: MainAxisSize.min,
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           //mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Text('Entrar'),

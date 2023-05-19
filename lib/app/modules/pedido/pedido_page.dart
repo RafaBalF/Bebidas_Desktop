@@ -34,7 +34,8 @@ class _PedidoPageState extends State<PedidoPage> {
   bool ligaDesligaLoja = false;
   bool ligaDesligaChamadaDePedido = false;
 
-  var corBotao = Colors.red;
+  var corBotao = Colors.green;
+  var corContainer = Colors.red;
 
   final NumberPaginatorController _controller = NumberPaginatorController();
   final ScrollController _scrollController = ScrollController();
@@ -130,12 +131,12 @@ class _PedidoPageState extends State<PedidoPage> {
                             return Container(
                               width: MediaQuery.of(this.context).size.width - 5,
                               height: 150,
-                              color: Colors.amber,
+                              color: corContainer,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(lojaStore.lojaOpenCloseMensage
-                                      .toString()),
+                                      .toString(), style: TextStyle(color: Colors.white, fontSize: 20),),
                                   SizedBox(
                                     width: 10,
                                   ),
@@ -144,7 +145,8 @@ class _PedidoPageState extends State<PedidoPage> {
                                     onPressed: () {
                                       if (ligaDesligaLoja == false) {
                                         ligaDesligaLojaCall(true);
-                                        corBotao = Colors.green;
+                                        corBotao = Colors.red;
+                                        corContainer = Colors.green;
                                         Timer.periodic(
                                           Duration(seconds: 1),
                                           (timer) {
@@ -160,7 +162,8 @@ class _PedidoPageState extends State<PedidoPage> {
                                               ligaDesligaLojaCall(false);
                                               ligaDesligaChamadaDePedido =
                                                   false;
-                                              corBotao = Colors.red;
+                                              corBotao = Colors.green;
+                                              corContainer = Colors.red;
                                             }
                                           },
                                         );
@@ -270,11 +273,10 @@ class _PedidoPageState extends State<PedidoPage> {
                                               style: ElevatedButton.styleFrom(
                                                 shape: CircleBorder(),
                                                 padding: EdgeInsets.all(20),
-                                                backgroundColor: Colors.white
-                                                    , // <-- Button color
-                                                foregroundColor: Colors
-                                                    .blue,
-                                               // <-- Splash color
+                                                backgroundColor: Colors
+                                                    .white, // <-- Button color
+                                                foregroundColor: Colors.blue,
+                                                // <-- Splash color
                                               ),
                                               child: Icon(
                                                   Icons.visibility_outlined),
@@ -325,4 +327,71 @@ class _PedidoPageState extends State<PedidoPage> {
       ),
     );
   }
+}
+
+Container controleLoja(context, perPage, lojaStore, ligaDesligaLoja, corBotao, timerTest, ligaDesligaChamadaDePedido) {
+  String? token = '';
+  var pedidoStore = PedidoStore();
+  getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    token = prefs.getString('token');
+    // debugPrint('get$token');
+  }
+  
+  ligaDesligaLojaCall(bool openClose) async {
+    await getToken();
+
+    await lojaStore.ligaDesligaLojaGetApi(token, openClose);
+  }
+  pedidoCall() async {
+    await getToken();
+
+    await pedidoStore.getPedidos(token, context, perPage);
+  }
+  return Container(
+    width: MediaQuery.of(context).size.width - 5,
+    height: 150,
+    color: Colors.amber,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(lojaStore.lojaOpenCloseMensage.toString()),
+        SizedBox(
+          width: 10,
+        ),
+        FloatingActionButton(
+          heroTag: 'btn',
+          onPressed: () {
+            if (ligaDesligaLoja == false) {
+              ligaDesligaLojaCall(true);
+              corBotao = Colors.green;
+              Timer.periodic(
+                Duration(seconds: 1),
+                (timer) {
+                  if (ligaDesligaChamadaDePedido == false) {
+                    pedidoCall();
+
+                    timerTest = timerTest + 1;
+                    debugPrint('Timer teeest $timerTest');
+                  } else {
+                    timer.cancel();
+                    ligaDesligaLojaCall(false);
+                    ligaDesligaChamadaDePedido = false;
+                    corBotao = Colors.red;
+                  }
+                },
+              );
+              ligaDesligaLoja = true;
+            } else {
+              ligaDesligaChamadaDePedido = true;
+              ligaDesligaLoja = false;
+            }
+          },
+          backgroundColor: corBotao,
+          child: Icon(Icons.power_settings_new),
+        ),
+      ],
+    ),
+  );
 }

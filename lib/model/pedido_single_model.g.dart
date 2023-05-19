@@ -25,6 +25,22 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
     });
   }
 
+  late final _$situationAtom =
+      Atom(name: '_PedidoSingleModelBase.situation', context: context);
+
+  @override
+  String? get situation {
+    _$situationAtom.reportRead();
+    return super.situation;
+  }
+
+  @override
+  set situation(String? value) {
+    _$situationAtom.reportWrite(value, super.situation, () {
+      super.situation = value;
+    });
+  }
+
   late final _$codigoAtom =
       Atom(name: '_PedidoSingleModelBase.codigo', context: context);
 
@@ -313,22 +329,6 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
     });
   }
 
-  late final _$stateCompanyAtom =
-      Atom(name: '_PedidoSingleModelBase.stateCompany', context: context);
-
-  @override
-  String? get stateCompany {
-    _$stateCompanyAtom.reportRead();
-    return super.stateCompany;
-  }
-
-  @override
-  set stateCompany(String? value) {
-    _$stateCompanyAtom.reportWrite(value, super.stateCompany, () {
-      super.stateCompany = value;
-    });
-  }
-
   late final _$complementCompanyAtom =
       Atom(name: '_PedidoSingleModelBase.complementCompany', context: context);
 
@@ -457,6 +457,22 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
     });
   }
 
+  late final _$referenceAtom =
+      Atom(name: '_PedidoSingleModelBase.reference', context: context);
+
+  @override
+  String? get reference {
+    _$referenceAtom.reportRead();
+    return super.reference;
+  }
+
+  @override
+  set reference(String? value) {
+    _$referenceAtom.reportWrite(value, super.reference, () {
+      super.reference = value;
+    });
+  }
+
   late final _$orderProductsAtom =
       Atom(name: '_PedidoSingleModelBase.orderProducts', context: context);
 
@@ -473,8 +489,71 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
     });
   }
 
+  late final _$visibilityCallMotoqueiroButtonAtom = Atom(
+      name: '_PedidoSingleModelBase.visibilityCallMotoqueiroButton',
+      context: context);
+
+  @override
+  bool get visibilityCallMotoqueiroButton {
+    _$visibilityCallMotoqueiroButtonAtom.reportRead();
+    return super.visibilityCallMotoqueiroButton;
+  }
+
+  @override
+  set visibilityCallMotoqueiroButton(bool value) {
+    _$visibilityCallMotoqueiroButtonAtom
+        .reportWrite(value, super.visibilityCallMotoqueiroButton, () {
+      super.visibilityCallMotoqueiroButton = value;
+    });
+  }
+
+  late final _$visibilityCallMotoqueiroMessageAtom = Atom(
+      name: '_PedidoSingleModelBase.visibilityCallMotoqueiroMessage',
+      context: context);
+
+  @override
+  bool get visibilityCallMotoqueiroMessage {
+    _$visibilityCallMotoqueiroMessageAtom.reportRead();
+    return super.visibilityCallMotoqueiroMessage;
+  }
+
+  @override
+  set visibilityCallMotoqueiroMessage(bool value) {
+    _$visibilityCallMotoqueiroMessageAtom
+        .reportWrite(value, super.visibilityCallMotoqueiroMessage, () {
+      super.visibilityCallMotoqueiroMessage = value;
+    });
+  }
+
+  late final _$orderDeliveryAtom =
+      Atom(name: '_PedidoSingleModelBase.orderDelivery', context: context);
+
+  @override
+  dynamic get orderDelivery {
+    _$orderDeliveryAtom.reportRead();
+    return super.orderDelivery;
+  }
+
+  @override
+  set orderDelivery(dynamic value) {
+    _$orderDeliveryAtom.reportWrite(value, super.orderDelivery, () {
+      super.orderDelivery = value;
+    });
+  }
+
   late final _$_PedidoSingleModelBaseActionController =
       ActionController(name: '_PedidoSingleModelBase', context: context);
+
+  @override
+  dynamic setStatus(String? value) {
+    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
+        name: '_PedidoSingleModelBase.setStatus');
+    try {
+      return super.setStatus(value);
+    } finally {
+      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic setCodigo(int? value) {
@@ -488,11 +567,11 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
   }
 
   @override
-  dynamic setStatus(String? value) {
+  dynamic setSituation(String? value) {
     final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
-        name: '_PedidoSingleModelBase.setStatus');
+        name: '_PedidoSingleModelBase.setSituation');
     try {
-      return super.setStatus(value);
+      return super.setSituation(value);
     } finally {
       _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
     }
@@ -686,17 +765,6 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
   }
 
   @override
-  dynamic setStateCompany(String? value) {
-    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
-        name: '_PedidoSingleModelBase.setStateCompany');
-    try {
-      return super.setStateCompany(value);
-    } finally {
-      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   dynamic setComplementCompany(String? value) {
     final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
         name: '_PedidoSingleModelBase.setComplementCompany');
@@ -708,11 +776,11 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
   }
 
   @override
-  dynamic setaddressClient(String? value) {
+  dynamic setAddressClient(String? value) {
     final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
-        name: '_PedidoSingleModelBase.setaddressClient');
+        name: '_PedidoSingleModelBase.setAddressClient');
     try {
-      return super.setaddressClient(value);
+      return super.setAddressClient(value);
     } finally {
       _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
     }
@@ -785,6 +853,17 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
   }
 
   @override
+  dynamic setReference(String? value) {
+    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
+        name: '_PedidoSingleModelBase.setReference');
+    try {
+      return super.setReference(value);
+    } finally {
+      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setOrderProducts(List<OrderProducts> value) {
     final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
         name: '_PedidoSingleModelBase.setOrderProducts');
@@ -796,9 +875,43 @@ mixin _$PedidoSingleModel on _PedidoSingleModelBase, Store {
   }
 
   @override
+  dynamic setVisibilityCallMotoqueiroButton(bool value) {
+    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
+        name: '_PedidoSingleModelBase.setVisibilityCallMotoqueiroButton');
+    try {
+      return super.setVisibilityCallMotoqueiroButton(value);
+    } finally {
+      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setVisibilityCallMotoqueiroMessage(bool value) {
+    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
+        name: '_PedidoSingleModelBase.setVisibilityCallMotoqueiroMessage');
+    try {
+      return super.setVisibilityCallMotoqueiroMessage(value);
+    } finally {
+      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOrderDelivery(dynamic value) {
+    final _$actionInfo = _$_PedidoSingleModelBaseActionController.startAction(
+        name: '_PedidoSingleModelBase.setOrderDelivery');
+    try {
+      return super.setOrderDelivery(value);
+    } finally {
+      _$_PedidoSingleModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 status: ${status},
+situation: ${situation},
 codigo: ${codigo},
 nameCompany: ${nameCompany},
 nameCliente: ${nameCliente},
@@ -817,7 +930,6 @@ cepCompany: ${cepCompany},
 numberCompany: ${numberCompany},
 neighborhoodCompany: ${neighborhoodCompany},
 cityCompany: ${cityCompany},
-stateCompany: ${stateCompany},
 complementCompany: ${complementCompany},
 addressClient: ${addressClient},
 cepClient: ${cepClient},
@@ -826,7 +938,11 @@ neighborhoodClient: ${neighborhoodClient},
 cityClient: ${cityClient},
 stateClient: ${stateClient},
 complementClient: ${complementClient},
-orderProducts: ${orderProducts}
+reference: ${reference},
+orderProducts: ${orderProducts},
+visibilityCallMotoqueiroButton: ${visibilityCallMotoqueiroButton},
+visibilityCallMotoqueiroMessage: ${visibilityCallMotoqueiroMessage},
+orderDelivery: ${orderDelivery}
     ''';
   }
 }
