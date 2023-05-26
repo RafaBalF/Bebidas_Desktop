@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ped/api.dart';
-import 'package:ped/model/pedido_single_model.dart';
 
 class PedidoSingleStore {
 

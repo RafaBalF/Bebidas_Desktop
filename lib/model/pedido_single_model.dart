@@ -12,6 +12,7 @@ part 'pedido_single_model.g.dart';
 class PedidoSingleModel = _PedidoSingleModelBase with _$PedidoSingleModel;
 
 abstract class _PedidoSingleModelBase with Store {
+  
   @observable
   String? status;
   @observable
@@ -256,8 +257,6 @@ abstract class _PedidoSingleModelBase with Store {
           visibilityCallMotoqueiroMessage = false;
         }
       }
-
-      debugPrint('${phoneCompany.length}');
     }
   }
 }

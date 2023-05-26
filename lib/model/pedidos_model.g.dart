@@ -137,6 +137,134 @@ mixin _$PedidosModel on _PedidosModelBase, Store {
     });
   }
 
+  late final _$marcadorAtom =
+      Atom(name: '_PedidosModelBase.marcador', context: context);
+
+  @override
+  Container? get marcador {
+    _$marcadorAtom.reportRead();
+    return super.marcador;
+  }
+
+  @override
+  set marcador(Container? value) {
+    _$marcadorAtom.reportWrite(value, super.marcador, () {
+      super.marcador = value;
+    });
+  }
+
+  late final _$motoqueiroChamadoAtom =
+      Atom(name: '_PedidosModelBase.motoqueiroChamado', context: context);
+
+  @override
+  Visibility? get motoqueiroChamado {
+    _$motoqueiroChamadoAtom.reportRead();
+    return super.motoqueiroChamado;
+  }
+
+  @override
+  set motoqueiroChamado(Visibility? value) {
+    _$motoqueiroChamadoAtom.reportWrite(value, super.motoqueiroChamado, () {
+      super.motoqueiroChamado = value;
+    });
+  }
+
+  late final _$orderDeliveryAtom =
+      Atom(name: '_PedidosModelBase.orderDelivery', context: context);
+
+  @override
+  dynamic get orderDelivery {
+    _$orderDeliveryAtom.reportRead();
+    return super.orderDelivery;
+  }
+
+  @override
+  set orderDelivery(dynamic value) {
+    _$orderDeliveryAtom.reportWrite(value, super.orderDelivery, () {
+      super.orderDelivery = value;
+    });
+  }
+
+  late final _$dadosPedidoCanceladoAtom =
+      Atom(name: '_PedidosModelBase.dadosPedidoCancelado', context: context);
+
+  @override
+  Visibility? get dadosPedidoCancelado {
+    _$dadosPedidoCanceladoAtom.reportRead();
+    return super.dadosPedidoCancelado;
+  }
+
+  @override
+  set dadosPedidoCancelado(Visibility? value) {
+    _$dadosPedidoCanceladoAtom.reportWrite(value, super.dadosPedidoCancelado,
+        () {
+      super.dadosPedidoCancelado = value;
+    });
+  }
+
+  late final _$obsAtom = Atom(name: '_PedidosModelBase.obs', context: context);
+
+  @override
+  String? get obs {
+    _$obsAtom.reportRead();
+    return super.obs;
+  }
+
+  @override
+  set obs(String? value) {
+    _$obsAtom.reportWrite(value, super.obs, () {
+      super.obs = value;
+    });
+  }
+
+  late final _$canceladoPorAtom =
+      Atom(name: '_PedidosModelBase.canceladoPor', context: context);
+
+  @override
+  String? get canceladoPor {
+    _$canceladoPorAtom.reportRead();
+    return super.canceladoPor;
+  }
+
+  @override
+  set canceladoPor(String? value) {
+    _$canceladoPorAtom.reportWrite(value, super.canceladoPor, () {
+      super.canceladoPor = value;
+    });
+  }
+
+  late final _$pedidoFeitoEmAtom =
+      Atom(name: '_PedidosModelBase.pedidoFeitoEm', context: context);
+
+  @override
+  String? get pedidoFeitoEm {
+    _$pedidoFeitoEmAtom.reportRead();
+    return super.pedidoFeitoEm;
+  }
+
+  @override
+  set pedidoFeitoEm(String? value) {
+    _$pedidoFeitoEmAtom.reportWrite(value, super.pedidoFeitoEm, () {
+      super.pedidoFeitoEm = value;
+    });
+  }
+
+  late final _$pedidoCanceladoEmAtom =
+      Atom(name: '_PedidosModelBase.pedidoCanceladoEm', context: context);
+
+  @override
+  String? get pedidoCanceladoEm {
+    _$pedidoCanceladoEmAtom.reportRead();
+    return super.pedidoCanceladoEm;
+  }
+
+  @override
+  set pedidoCanceladoEm(String? value) {
+    _$pedidoCanceladoEmAtom.reportWrite(value, super.pedidoCanceladoEm, () {
+      super.pedidoCanceladoEm = value;
+    });
+  }
+
   late final _$_PedidosModelBaseActionController =
       ActionController(name: '_PedidosModelBase', context: context);
 
@@ -229,6 +357,94 @@ mixin _$PedidosModel on _PedidosModelBase, Store {
   }
 
   @override
+  dynamic setStatusComMarcadador(Container? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setStatusComMarcadador');
+    try {
+      return super.setStatusComMarcadador(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setMotoqueiroChamado(Visibility? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setMotoqueiroChamado');
+    try {
+      return super.setMotoqueiroChamado(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOrderDelivery(dynamic value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setOrderDelivery');
+    try {
+      return super.setOrderDelivery(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPedidoCancelado(Visibility? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setPedidoCancelado');
+    try {
+      return super.setPedidoCancelado(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setObs(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setObs');
+    try {
+      return super.setObs(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCanceladoPor(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setCanceladoPor');
+    try {
+      return super.setCanceladoPor(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPedidoFeitoEm(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setPedidoFeitoEm');
+    try {
+      return super.setPedidoFeitoEm(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPedidoCanceladoEm(String? value) {
+    final _$actionInfo = _$_PedidosModelBaseActionController.startAction(
+        name: '_PedidosModelBase.setPedidoCanceladoEm');
+    try {
+      return super.setPedidoCanceladoEm(value);
+    } finally {
+      _$_PedidosModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 codigo: ${codigo},
@@ -238,7 +454,15 @@ data: ${data},
 valor: ${valor},
 uuid: ${uuid},
 situation: ${situation},
-botoes: ${botoes}
+botoes: ${botoes},
+marcador: ${marcador},
+motoqueiroChamado: ${motoqueiroChamado},
+orderDelivery: ${orderDelivery},
+dadosPedidoCancelado: ${dadosPedidoCancelado},
+obs: ${obs},
+canceladoPor: ${canceladoPor},
+pedidoFeitoEm: ${pedidoFeitoEm},
+pedidoCanceladoEm: ${pedidoCanceladoEm}
     ''';
   }
 }

@@ -1,6 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'modules/pedido/loja_store.dart';
+import 'modules/pedido/pedido_store.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -16,14 +23,3 @@ class AppWidget extends StatelessWidget {
     ); //added by extensionflut
   }
 }
-
-// ignore_for_file: prefer_const_constructors
-
-List<SideMenuItem> items = [
-  SideMenuItem(
-    priority: 0,
-    title: 'Pedidos',
-    onTap: () => {},
-    icon: Icon(Icons.shopping_cart),
-  ),
-];

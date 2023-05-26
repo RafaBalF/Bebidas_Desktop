@@ -10,6 +10,6 @@ class PedidoModule extends Module {
   @override
   final List<ModularRoute> routes = [
     ChildRoute('/',
-        child: (_, args) => const PedidoSinglePage(title: 'Visualizar Pedido', uuid: '34323sfsdf',)),
+        child: (_, args) => const PedidoSinglePage(title: 'Visualizar Pedido', uuid: '34323sfsdf')),
   ];
 }
